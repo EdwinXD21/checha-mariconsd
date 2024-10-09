@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Rebote</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #text {
+            position: absolute;
+            font-size: 50px;
+            color: blue;
+            cursor: pointer;
+            transition: transform 0.5s ease, color 0.2s ease;
+        }
+        #instructions {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #game-over {
+            display: none;
+            font-size: 40px;
+            color: red;
+        }
+        #score {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="instructions">¡Haz clic en "Checha Maricón"!</div>
+<div id="text">¡Checha Maricón!</div>
+<div id="game-over">¡Perdiste!</div>
+<div id="score">Puntaje: 0</div>
+
+<script>
+    let score = 0;
+    let gameActive = true;
+    let timeout;
+
+    const text = document.getElementById('text');
+    const scoreDisplay = document.getElementById('score');
+    const gameOverDisplay = document.getElementById('game-over');
+
+    function getRandomPosition() {
+        const x = Math.random() * (window.innerWidth - 100);
+        const y = Math.random() * (window.innerHeight - 100);
+        return { x, y };
+    }
+
+    function changeColor() {
+        text.style.color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    }
+
+    function moveText() {
+        if (!gameActive) return;
+
+        const { x, y } = getRandomPosition();
+        text.style.transform = `translate(${x}px, ${y}px)`;
+        changeColor();
+        timeout = setTimeout(moveText, 1000);
+    }
+
+    text.addEventListener('click', () => {
+        if (!gameActive) return;
+
+        score += 1;
+        scoreDisplay.innerText = `Puntaje: ${score}`;
+        const currentSize = parseInt(window.getComputedStyle(text).fontSize);
+        text.style.fontSize = `${currentSize * 0.8}px`;
+    });
+
+    function startGame() {
+        score = 0;
+        gameActive = true;
+        scoreDisplay.innerText = `Puntaje: ${score}`;
+        text.style.fontSize = '50px';
+        moveText();
+        setTimeout(() => {
+            if (gameActive) {
+                gameActive = false;
+                clearTimeout(timeout);
+                gameOverDisplay.style.display = 'block';
+            }
+        }, 5000); // 5 segundos para tocar el texto
+    }
+
+    startGame();
+</script>
+
+</body>
+</html>
